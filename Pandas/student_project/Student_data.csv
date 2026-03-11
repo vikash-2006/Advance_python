@@ -1,0 +1,11 @@
+,Student_id,Student_name,Course_name,Course_duration,Total_fees
+0,1,Abhishek,Data Science,6 months,50000
+1,2,Rishi,Data Analyst,4 months,40000
+2,3,Vikash,Machine Learning,6 months,60000
+3,4,Akanksha,AI,8 months,70000
+4,5,Sandeep,Python,3 months,20000
+5,6,Divyansh,Power BI,2 months,15000
+6,7,Sourbh,SQL,2 months,12000
+7,8,Tushar,Deep Learning,7 months,65000
+8,9,Prachi,Tableau,2 months,18000
+9,10,Ayushi,Data Engineering,6 months,55000
