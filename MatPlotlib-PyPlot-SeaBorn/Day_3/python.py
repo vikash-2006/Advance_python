@@ -5,45 +5,16 @@
 # Tools    : Python | Pandas | NumPy | Plotly | VS Code
 # Dataset  : supply_chain.csv
 # =============================================================================
-#
-# WHAT IS SUPPLY CHAIN ANALYSIS?
-# Supply chain analysis is the process of examining the flow of goods,
-# data, and finances from raw material to final customer delivery.
-# It helps businesses identify inefficiencies, reduce costs, and
-# improve overall performance across production, logistics, and sales.
-#
-# =============================================================================
 
 
 # -----------------------------------------------------------------------------
 # SECTION 1 — IMPORT LIBRARIES
 # -----------------------------------------------------------------------------
-#
-# WHAT ARE LIBRARIES?
-# Libraries are pre-written collections of code that give us ready-made
-# tools and functions so we don't have to write everything from scratch.
-#
-# numpy (np)        → Numerical Python. Used for mathematical operations
-#                     on arrays and matrices. Example: np.mean(), np.sum()
-#
-# pandas (pd)       → Used for data manipulation and analysis.
-#                     It loads data into a DataFrame (like an Excel table)
-#                     so we can filter, group, and analyze it easily.
-#
-# plotly.express    → A high-level plotting library for creating
-#                     interactive charts like scatter plots and pie charts
-#                     with very few lines of code.
-#
-# plotly.io (pio)   → Controls Plotly input/output settings.
-#                     Here we use it to set the default visual theme.
-#
-# plotly.graph_objects (go) → A lower-level Plotly library that gives
-#                             more control over chart customization.
-#                             Used here to build the bar chart manually.
-#
-# pio.templates.default = "plotly_white"
-#                   → Sets the background theme of all charts to white,
-#                     which gives a clean, professional look.
+# numpy (np)     → Mathematical operations on arrays.
+# pandas (pd)    → Data manipulation and analysis via DataFrames.
+# plotly.express → High-level interactive charts (scatter, pie, line, bar).
+# plotly.io      → Controls chart settings like default theme.
+# graph_objects  → Lower-level Plotly for manual chart customization.
 # -----------------------------------------------------------------------------
 
 import numpy as np
@@ -58,24 +29,10 @@ pio.templates.default = "plotly_white"
 # -----------------------------------------------------------------------------
 # SECTION 2 — LOAD DATASET
 # -----------------------------------------------------------------------------
-#
-# WHAT IS A DATASET?
-# A dataset is a structured collection of data, usually stored as a
-# CSV (Comma-Separated Values) file. Each row is one record (product/SKU)
-# and each column is a feature (Price, Revenue, Defect Rate, etc.)
-#
-# pd.read_csv()     → Reads the CSV file from your computer and converts
-#                     it into a Pandas DataFrame stored in variable 'df'.
-#
-# df.head()         → Displays the first 5 rows of the dataset so we can
-#                     quickly verify the data loaded correctly.
-#
-# The dataset has 24 columns including:
-#   - Product type, SKU, Price, Availability
-#   - Number of products sold, Revenue generated
-#   - Stock levels, Lead times, Order quantities
-#   - Location, Shipping carriers, Routes
-#   - Manufacturing costs, Defect rates, Inspection results
+# pd.read_csv() → Reads CSV and converts it into a Pandas DataFrame.
+# df.head()     → Shows first 5 rows to verify data loaded correctly.
+# Dataset has 24 columns: SKU, Price, Revenue, Stock levels, Lead times,
+# Shipping carriers, Manufacturing costs, Defect rates, etc.
 # -----------------------------------------------------------------------------
 
 df = pd.read_csv("/Users/apple/Downloads/supply_chain - supply_chain.csv")
@@ -83,209 +40,171 @@ print(df.head())
 
 
 # -----------------------------------------------------------------------------
-# SECTION 3 — PRICE vs REVENUE ANALYSIS
+# SECTION 3 — PRICE vs REVENUE BY PRODUCT TYPE (SCATTER PLOT)
 # -----------------------------------------------------------------------------
-#
-# OBJECTIVE:
-# Understand the relationship between the price of a product and the
-# revenue it generates, broken down by product type.
-#
-# WHAT IS A SCATTER PLOT?
-# A scatter plot displays individual data points on an X-Y axis.
-# Each dot represents one product (SKU). By looking at the spread
-# and direction of the dots, we can identify patterns or correlations.
-#
-# px.scatter()      → Creates an interactive scatter plot.
-#
-# PARAMETERS EXPLAINED:
-#   df              → The DataFrame (our dataset) to use.
-#   x = 'Price'     → X-axis shows the price of the product.
-#   y = 'Revenue generated' → Y-axis shows the revenue earned.
-#   color = 'Product type'  → Each product type gets a different color,
-#                              making it easy to compare categories.
-#   hover_data      → Shows extra info (products sold) when you hover
-#                     over a dot in the interactive chart.
-#   trendline='ols' → Draws an OLS (Ordinary Least Squares) regression
-#                     line — a straight line that best fits the data.
-#                     It shows the overall trend: upward = positive
-#                     correlation, downward = negative correlation.
-#                     NOTE: Requires 'statsmodels' library.
-#                     Install with: pip install statsmodels
-#
-# INSIGHT:
-# Skincare products show a positive trend — as price increases,
-# revenue also increases. Haircare shows a slight downward trend,
-# suggesting price may not be a strong driver of revenue for that type.
+# Scatter plot  → Each dot = one SKU. Shows relationship between Price & Revenue.
+# color         → Different color per product type for easy comparison.
+# hover_data    → Shows extra info on hover.
+# trendline='ols' → Regression line showing overall trend (+ or - correlation).
+# INSIGHT: Skincare shows positive trend (higher price = more revenue).
 # -----------------------------------------------------------------------------
 
-fig = px.scatter(
-    df,
-    x='Price',
-    y='Revenue generated',
-    color='Product type',
-    hover_data=['Number of products sold'],
-    trendline='ols',
-    title='Price vs Revenue Generated by Product Type'
-)
+fig = px.scatter(df, x='Price', y='Revenue generated',
+                 color='Product type',
+                 hover_data=['Number of products sold'],
+                 trendline='ols',
+                 title='Price vs Revenue Generated by Product Type')
 fig.show()
 
 
 # -----------------------------------------------------------------------------
-# SECTION 4 — SALES DISTRIBUTION BY PRODUCT TYPE
+# SECTION 4 — SALES DISTRIBUTION BY PRODUCT TYPE (DONUT CHART)
 # -----------------------------------------------------------------------------
-#
-# OBJECTIVE:
-# Find out which product type contributes the most units sold,
-# and visualize the proportion using a pie chart.
-#
-# STEP 1 — GROUP THE DATA:
-# df.groupby("Product type")
-#                     → Groups all rows by their Product type
-#                       (skincare, haircare, cosmetics).
-# ["Number of products sold"].sum()
-#                     → For each group, adds up (sums) all products sold.
-# .reset_index()      → Converts the result back into a clean DataFrame.
-#
-# WHAT IS A PIE CHART?
-# A pie chart shows proportions of a whole. Each slice represents
-# one category, and the size of the slice = its percentage share.
-#
-# px.pie()            → Creates an interactive donut/pie chart.
-#
-# PARAMETERS EXPLAINED:
-#   values            → The column whose numbers determine slice sizes.
-#   names             → The column used to label each slice.
-#   hole = 0.5        → Creates a hole in the center (donut chart style).
-#                       Value between 0 (full pie) and 1 (no pie).
-#   color_discrete_sequence → Sets the color palette. 'Pastel' gives
-#                              soft, visually appealing colors.
-#   textposition='inside'   → Places percentage labels inside each slice.
-#   textinfo='percent+label'→ Shows both the % and the category name.
-#
-# INSIGHT:
-# Skincare leads with 45% of total sales, followed by Haircare (29.5%)
-# and Cosmetics (25.5%). Skincare is the company's core product line.
+# groupby().sum() → Total units sold per product type.
+# hole=0.5        → Donut-style chart.
+# INSIGHT: Skincare 45% | Haircare 29.5% | Cosmetics 25.5%.
 # -----------------------------------------------------------------------------
 
 sales_data = df.groupby("Product type")["Number of products sold"].sum().reset_index()
 print(sales_data)
 
-pie_chart = px.pie(
-    sales_data,
-    values="Number of products sold",
-    names="Product type",
-    title="Sales by Product Type",
-    hover_data=["Number of products sold"],
-    hole=0.5,
-    color_discrete_sequence=px.colors.qualitative.Pastel
-)
+pie_chart = px.pie(sales_data, values="Number of products sold", names="Product type",
+                   title="Sales by Product Type",
+                   hole=0.5,
+                   color_discrete_sequence=px.colors.qualitative.Pastel)
 pie_chart.update_traces(textposition='inside', textinfo='percent+label')
 pie_chart.show()
 
 
 # -----------------------------------------------------------------------------
-# SECTION 5 — TOTAL REVENUE BY SHIPPING CARRIER
+# SECTION 5 — TOTAL REVENUE BY SHIPPING CARRIER (BAR CHART)
 # -----------------------------------------------------------------------------
-#
-# OBJECTIVE:
-# Compare the total revenue generated through each shipping carrier
-# (Carrier A, Carrier B, Carrier C) to identify the most profitable one.
-#
-# WHAT IS A BAR CHART?
-# A bar chart uses rectangular bars to compare values across categories.
-# Taller bar = higher value. Ideal for comparing groups side by side.
-#
-# go.Figure()         → Creates a blank Plotly figure (canvas).
-# fig.add_trace()     → Adds a chart layer (trace) to the figure.
-# go.Bar()            → Defines a bar chart trace.
-#
-# PARAMETERS EXPLAINED:
-#   x = 'Shipping carriers' → X-axis: the 3 carriers (A, B, C)
-#   y = 'Revenue generated' → Y-axis: total revenue for each carrier
-#
-# fig.update_layout() → Customizes the chart title and axis labels
-#                       for better readability.
-#
-# INSIGHT:
-# Carrier B generates significantly more revenue (~250k) compared to
-# Carrier A (~140k) and Carrier C (~180k). The company should prioritize
-# Carrier B for high-value shipments.
+# go.Figure()    → Creates blank Plotly canvas.
+# go.Bar()       → Adds bar chart layer to the figure.
+# update_layout()→ Sets title and axis labels.
+# INSIGHT: Carrier B generates highest revenue (~250k) vs A (~140k), C (~180k).
 # -----------------------------------------------------------------------------
 
 total_revenue = df.groupby('Shipping carriers')['Revenue generated'].sum().reset_index()
 
 fig = go.Figure()
-fig.add_trace(go.Bar(
-    x=total_revenue['Shipping carriers'],
-    y=total_revenue['Revenue generated']
-))
-fig.update_layout(
-    title='Total Revenue by Shipping Carrier',
-    xaxis_title='Shipping Carrier',
-    yaxis_title='Revenue Generated'
-)
+fig.add_trace(go.Bar(x=total_revenue['Shipping carriers'],
+                     y=total_revenue['Revenue generated']))
+fig.update_layout(title='Total Revenue by Shipping Carrier',
+                  xaxis_title='Shipping Carrier',
+                  yaxis_title='Revenue Generated')
 fig.show()
 
 
 # -----------------------------------------------------------------------------
-# SECTION 6 — DEFECT RATES BY PRODUCT TYPE
+# SECTION 6 — DEFECT RATES BY PRODUCT TYPE (DONUT CHART)
 # -----------------------------------------------------------------------------
-#
-# OBJECTIVE:
-# Identify which product type has the highest proportion of defects
-# so the business can prioritize quality control efforts.
-#
-# WHAT IS A DEFECT RATE?
-# A defect rate is the percentage or count of products that fail
-# quality inspection. A high defect rate means more waste, returns,
-# and customer dissatisfaction — directly hurting revenue.
-#
-# df.groupby('Product type')['Defect rates'].sum()
-#                     → Groups by product type and sums up all
-#                       defect rate values for each group.
-#
-# The same px.pie() approach from Section 4 is used here, but
-# now the values represent defect rates instead of units sold.
-#
-# INSIGHT:
-# Skincare has the highest defect rate at 41%, followed by
-# Haircare at 37.1% and Cosmetics at 21.9%.
-# This is a serious quality control concern — skincare leads in
-# both sales AND defects, which could damage brand reputation
-# and increase return/replacement costs if not addressed.
+# Defect Rate → % of products that fail quality inspection.
+# High defect = more returns, waste, and customer dissatisfaction.
+# INSIGHT: Skincare 41% | Haircare 37.1% | Cosmetics 21.9%.
+# Skincare leads in both sales AND defects — quality control needed urgently.
 # -----------------------------------------------------------------------------
 
 defect_rates = df.groupby('Product type')['Defect rates'].sum().reset_index()
 
-pie_chart = px.pie(
-    defect_rates,
-    values='Defect rates',
-    names='Product type',
-    title='Defective by Product Type',
-    hole=0.5,
-    color_discrete_sequence=px.colors.qualitative.Pastel
-)
+pie_chart = px.pie(defect_rates, values='Defect rates', names='Product type',
+                   title='Defect Rates by Product Type',
+                   hole=0.5,
+                   color_discrete_sequence=px.colors.qualitative.Pastel)
 pie_chart.update_traces(textposition='inside', textinfo='percent+label')
 pie_chart.show()
 
 
+# -----------------------------------------------------------------------------
+# SECTION 7 — AVERAGE LEAD TIME & MANUFACTURING COST BY PRODUCT TYPE
+# -----------------------------------------------------------------------------
+# Lead Time         → Days from order placement to product delivery.
+# Manufacturing Cost→ Total cost to produce one unit.
+# groupby().mean()  → Average value per product type.
+# pd.merge()        → Combines both results into one table.
+# -----------------------------------------------------------------------------
+
+avg_lead_time = df.groupby('Product type')['Lead time'].mean().reset_index()
+avg_manufacturing_costs = df.groupby('Product type')['Manufacturing costs'].mean().reset_index()
+
+result = pd.merge(avg_lead_time, avg_manufacturing_costs, on='Product type')
+result.rename(columns={'Lead time': 'Average Lead Time',
+                       'Manufacturing costs': 'Average Manufacturing Costs'}, inplace=True)
+print(result)
+
+
+# -----------------------------------------------------------------------------
+# SECTION 8 — REVENUE GENERATED BY SKU (LINE CHART)
+# -----------------------------------------------------------------------------
+# SKU (Stock Keeping Unit) → Unique code for each product variant.
+# Line chart → Shows revenue trend across all SKUs.
+# Peaks = high-revenue products | Troughs = underperformers.
+# -----------------------------------------------------------------------------
+
+revenue_chart = px.line(df, x='SKU', y='Revenue generated',
+                        title='Revenue Generated by SKU')
+revenue_chart.show()
+
+
+# -----------------------------------------------------------------------------
+# SECTION 9 — STOCK LEVELS BY SKU (LINE CHART)
+# -----------------------------------------------------------------------------
+# Stock Levels → Units currently available in inventory.
+# Too high → Storage cost rises | Too low → Risk of stockouts.
+# -----------------------------------------------------------------------------
+
+stock_chart = px.line(df, x='SKU', y='Stock levels',
+                      title='Stock Level by SKU')
+stock_chart.show()
+
+
+# -----------------------------------------------------------------------------
+# SECTION 10 — ORDER QUANTITIES BY SKU (BAR CHART)
+# -----------------------------------------------------------------------------
+# Order Quantity → Units ordered/replenished per SKU.
+# High order + low stock = supply shortage risk.
+# -----------------------------------------------------------------------------
+
+order_chart = px.bar(df, x='SKU', y='Order quantities',
+                     title='Order Quantities by SKU')
+order_chart.show()
+
+
+# -----------------------------------------------------------------------------
+# SECTION 11 — SHIPPING COSTS BY CARRIER (BAR CHART)
+# -----------------------------------------------------------------------------
+# Compares shipping cost across Carrier A, B, C.
+# Helps evaluate cost vs. revenue to find the most efficient carrier.
+# -----------------------------------------------------------------------------
+
+shipping_cost_chart = px.bar(df, x='Shipping carriers', y='Shipping costs',
+                             title='Shipping Costs by Carrier')
+shipping_cost_chart.show()
+
+
+# -----------------------------------------------------------------------------
+# SECTION 12 — AVERAGE COST BY TRANSPORTATION MODE (DONUT CHART)
+# -----------------------------------------------------------------------------
+# Transportation Modes → Road, Air, Sea, Rail.
+# groupby().mean()     → Average logistics cost per mode.
+# -----------------------------------------------------------------------------
+
+Tc = df.groupby('Transportation modes')['Costs'].mean().reset_index()
+print(Tc)
+
+transport_pie = px.pie(Tc, values='Costs', names='Transportation modes',
+                       title='Average Cost by Transportation Mode',
+                       hole=0.5,
+                       color_discrete_sequence=px.colors.qualitative.Pastel)
+transport_pie.update_traces(textposition='inside', textinfo='percent+label')
+transport_pie.show()
+
+
 # =============================================================================
-# SUMMARY OF KEY INSIGHTS
+# KEY INSIGHTS SUMMARY
 # =============================================================================
-#
-# 1. PRICE vs REVENUE   → Skincare shows a strong positive price-revenue
-#                          relationship. Price it higher = earn more.
-#
-# 2. SALES SHARE        → Skincare dominates at 45% of total units sold.
-#                          Haircare and Cosmetics together make up 55%.
-#
-# 3. SHIPPING CARRIERS  → Carrier B is the top revenue-generating carrier.
-#                          Consider increasing shipment volume via Carrier B.
-#
-# 4. DEFECT RATES       → Skincare has the most defects (41%).
-#                          Quality control improvements needed urgently
-#                          in the skincare production line.
-#
-# =============================================================================
-# END OF ANALYSIS
+# 1. Price vs Revenue   → Skincare: higher price = higher revenue (positive trend).
+# 2. Sales Share        → Skincare dominates at 45% of total units sold.
+# 3. Shipping Carriers  → Carrier B generates the most revenue (~250k).
+# 4. Defect Rates       → Skincare has highest defects (41%) — needs QC fix.
 # =============================================================================
