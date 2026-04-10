@@ -95,7 +95,7 @@ print(attrition_by_dept)
 # go.Pie() adds a Pie chart trace inside the figure
 
 fig = go.Figure(data=[go.Pie(
-    labels=attrition_by_dept['Department'],   # Department names as slice labels
+    labels=attrition_by_dept['Department'],    # Department names as slice labels
     values=attrition_by_dept['Count'],         # Attrition count determines slice size
     hole=0.4,                                  # hole=0.4 creates the donut effect (40% hollow center)
     marker=dict(colors=['red', 'green']),      # Assign custom colors to slices

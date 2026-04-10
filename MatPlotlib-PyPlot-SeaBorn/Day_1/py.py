@@ -34,7 +34,7 @@ import seaborn as sns
 # A DataFrame is a 2D labeled table — like an Excel sheet.
 # Update the path to where your titanic CSV file is located.
 # -----------------------------------------------------------------------------
-df = pd.read_csv("/Users/apple/data science/Advance_Python/MatPlotlib-PyPlot-SeaBorn/Day-1/titanic - titanic.csv")
+df = pd.read_csv("/Users/apple/data science/Advance_Python/MatPlotlib-PyPlot-SeaBorn/Day_1/titanic - titanic.csv")
 
 print("=" * 60)
 print("FULL DATAFRAME — TITANIC:")
